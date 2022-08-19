@@ -6,10 +6,14 @@ from .models import Account
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 
+from .serializers import AccountSerializer
+
 
 class AccountView(View):
     def post(self, request):
-        data = json.loads(request.body)
+        serializer = AccountSerializer(data=json.loads(request.body))
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
 
         try:
             if Account.objects.filter(email=data['email']).exists():
