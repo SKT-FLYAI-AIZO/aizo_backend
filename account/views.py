@@ -4,7 +4,7 @@ import bcrypt
 from .models import Account
 
 from django.views import View
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 
 from .serializers import AccountSerializer
 
@@ -25,7 +25,7 @@ class AccountView(View):
                 password=bcrypt.hashpw(data["password"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
             ).save()
 
-            return HttpResponse({"message : Account Created!"}, status=200)
+            return JsonResponse({"message": "Account Created!"}, status=200)
 
         except KeyError:
-            return JsonResponse({"message" : "INVALID_KEYS"}, status=400)
+            return JsonResponse({"message": "INVALID_KEYS"}, status=400)

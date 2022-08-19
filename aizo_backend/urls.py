@@ -17,5 +17,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('account', include('account.urls')),
-    path('login', include('login.urls'))
+    path('login', include('login.urls')),
+    path('media', include('media.urls'))
 ]

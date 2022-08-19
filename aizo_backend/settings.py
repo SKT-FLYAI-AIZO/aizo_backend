@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     'sslserver',
     'account',
     'login',
+    'storage',
+    'media'
 ]
 
 MIDDLEWARE = [
@@ -143,6 +145,13 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
+
+STORAGE_INFO = secrets.get('STORAGE')
+
+DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+
+AZURE_CUSTOM_DOMAIN = f'{STORAGE_INFO["account_name"]}.blob.core.windows.net'
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STORAGE_INFO["azure_container"]}/'
 
 STATIC_URL = '/static/'
 
