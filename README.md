@@ -5,6 +5,8 @@
 - login app 생성 -> 계정 관리는 account app에서 처리, login은 login app에서만 관리
 - Django project와 Azure MySQL 서버 연동 완료
 - Account, Login Serializer 생성
+- media app 생성 -> video 처리
+- Azure Storage Account 연동
 ---
 
 ### 2022.08.18
