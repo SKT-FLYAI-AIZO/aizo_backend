@@ -5,7 +5,8 @@
 - video api 생성
 - file api 생성
 - jwt refresh 토큰 발급 추가
-- requirements.txt
+- requirements.txt 생성
+- secrets.json -> 환경변수로 셋팅
 ---
 
 ### 2022.08.19
