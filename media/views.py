@@ -1,6 +1,7 @@
 import json
 
 import requests
+from rest_framework.permissions import IsAuthenticated
 
 from media.models import Video
 from media.serializers import VideoSerializer
@@ -10,6 +11,8 @@ from django.http import StreamingHttpResponse, JsonResponse
 
 
 class VideoView(View):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         id = request.GET.get('id')
         account_id = request.GET.get('account_id')
@@ -43,6 +46,8 @@ class VideoView(View):
 
 
 class FileView(View):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         file_url = request.GET.get('path')
         r = requests.get(file_url, stream=True)
