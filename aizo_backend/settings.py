@@ -23,21 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-secret_file = os.path.join(BASE_DIR, 'secrets.json')
+# secret_file = os.path.join(BASE_DIR, 'secrets.json')
+#
+# with open(secret_file) as f:
+#     secrets = json.loads(f.read())
+#
+#
+# def get_secret(setting, secrets=secrets):
+#     try:
+#         return secrets[setting]
+#     except KeyError:
+#         error_msg = "Set the {} environment variable".format(setting)
+#         raise ImproperlyConfigured(error_msg)
 
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
 
-
-def get_secret(setting, secrets=secrets):
-    try:
-        return secrets[setting]
-    except KeyError:
-        error_msg = "Set the {} environment variable".format(setting)
-        raise ImproperlyConfigured(error_msg)
-
-
-SECRET_KEY = get_secret("SECRET_KEY")
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -96,16 +96,16 @@ WSGI_APPLICATION = 'aizo_backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-DB_INFO = secrets.get('DB')
+# DB_INFO = secrets.get('DB')
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': DB_INFO['name'],
-        'HOST': DB_INFO['host'],
-        'USER': DB_INFO['user'],
-        'PASSWORD': DB_INFO['password'],
-        'PORT': DB_INFO['port'],
+        'NAME': os.getenv('DB_NAME'),
+        'HOST': os.getenv('DB_HOST'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
@@ -146,12 +146,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STORAGE_INFO = secrets.get('STORAGE')
+# STORAGE_INFO = secrets.get('STORAGE')
+STORAGE_ACCOUNT_NAME = os.getenv('STORAGE_ACCOUNT_NAME')
+STORAGE_ACCOUNT_KEY = os.getenv('STORAGE_ACCOUNT_KEY')
+STORAGE_AZURE_CONTAINER = os.getenv('STORAGE_AZURE_CONTAINER')
 
 DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
-AZURE_CUSTOM_DOMAIN = f'{STORAGE_INFO["account_name"]}.blob.core.windows.net'
-MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STORAGE_INFO["azure_container"]}/'
+AZURE_CUSTOM_DOMAIN = f'{STORAGE_ACCOUNT_NAME}.blob.core.windows.net'
+MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/{STORAGE_AZURE_CONTAINER}/'
 
 STATIC_URL = '/static/'
 
