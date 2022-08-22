@@ -1,5 +1,11 @@
 # AIZO Backend Part Repo
 ---
+### 2022.08.22
+- Video model fk 수정
+- video api 생성
+- file api 생성
+---
+
 ### 2022.08.19
 - secrets.json 생성 -> django project 키 값, db 정보
 - login app 생성 -> 계정 관리는 account app에서 처리, login은 login app에서만 관리
