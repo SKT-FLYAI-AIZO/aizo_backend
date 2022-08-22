@@ -4,8 +4,6 @@
 - Video model fk 수정
 - video api 생성
 - file api 생성
-- jwt refresh 토큰 발급 추가
-- requirements.txt
 ---
 
 ### 2022.08.19
