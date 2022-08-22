@@ -19,7 +19,6 @@ msal==1.18.0
 msal-extensions==1.0.0
 msrest==0.7.1
 oauthlib==3.2.0
-opencv-python==4.6.0
 portalocker==2.5.1
 PyJWT==1.7.1
 python3-pymysql
