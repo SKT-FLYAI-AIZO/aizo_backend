@@ -1,5 +1,9 @@
 # AIZO Backend Part Repo
 ---
+### 2022.08.23
+- uploader api 생성
+---
+
 ### 2022.08.22
 - Video model fk 수정
 - video api 생성
