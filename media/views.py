@@ -42,7 +42,7 @@ class VideoView(View):
             path=data['path']
         ).save()
 
-        return JsonResponse({"message": "Video Saved!"}, status=200)
+        return JsonResponse({"message": "Video Saved!"}, status=201)
 
 
 class FileView(View):

@@ -25,7 +25,7 @@ class AccountView(View):
                 password=bcrypt.hashpw(data["password"].encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
             ).save()
 
-            return JsonResponse({"message": "Account Created!"}, status=200)
+            return JsonResponse({"message": "Account Created!"}, status=201)
 
         except KeyError:
             return JsonResponse({"message": "INVALID_KEYS"}, status=400)
