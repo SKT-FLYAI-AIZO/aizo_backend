@@ -7,6 +7,7 @@ class Video(models.Model):
     date = models.DateTimeField()
     location = models.CharField(max_length=45, blank=True)
     path = models.CharField(max_length=200)
+    is_cropped = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

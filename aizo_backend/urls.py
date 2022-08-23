@@ -19,4 +19,5 @@ urlpatterns = [
     path('account', include('account.urls')),
     path('login', include('login.urls')),
     path('media', include('media.urls')),
+    path('storage', include('storage.urls'))
 ]

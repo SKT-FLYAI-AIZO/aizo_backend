@@ -27,7 +27,7 @@ class VideoView(View):
         serializer = VideoSerializer(queryset, many=True)
         data = serializer.data
 
-        return JsonResponse({"message": "Success!", "data": data}, safe=False)
+        return JsonResponse({"message": "Success!", "data": data}, safe=False, status=200)
 
     # 테스트용 더미데이터 생성 API
     def post(self, request):
