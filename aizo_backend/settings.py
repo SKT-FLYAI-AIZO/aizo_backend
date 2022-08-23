@@ -40,7 +40,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -150,6 +150,7 @@ USE_TZ = True
 STORAGE_ACCOUNT_NAME = os.getenv('STORAGE_ACCOUNT_NAME')
 STORAGE_ACCOUNT_KEY = os.getenv('STORAGE_ACCOUNT_KEY')
 STORAGE_AZURE_CONTAINER = os.getenv('STORAGE_AZURE_CONTAINER')
+STORAGE_CONNECTION_STRING = os.getenv('STORAGE_CONNECTION_STRING')
 
 DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
