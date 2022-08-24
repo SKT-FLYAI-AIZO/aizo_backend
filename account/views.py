@@ -11,14 +11,14 @@ from .serializers import AccountSerializer
 
 class AccountView(View):
     def post(self, request):
-        serializer = AccountSerializer(data=json.loads(request.body))
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
+        try:
+            serializer = AccountSerializer(data=json.loads(request.body))
+            serializer.is_valid(raise_exception=True)
+            data = serializer.validated_data
+        except Exception:
+            return JsonResponse(serializer.errors, status=400)
 
         try:
-            if Account.objects.filter(email=data['email']).exists():
-                return JsonResponse({"message": "EXISTS_EMAIL"}, status=400)
-
             Account.objects.create(
                 email=data['email'],
                 name=data['name'],
