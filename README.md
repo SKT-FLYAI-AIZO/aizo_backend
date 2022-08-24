@@ -2,6 +2,7 @@
 ---
 ### 2022.08.24
 - account api 에러처리 수정
+- uploader, video api request 파라미터 수정
 ---
 
 ### 2022.08.23
