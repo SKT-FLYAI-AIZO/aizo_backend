@@ -1,5 +1,9 @@
 # AIZO Backend Part Repo
 ---
+### 2022.08.24
+- account api 에러처리 수정
+---
+
 ### 2022.08.23
 - uploader api 생성
 ---
