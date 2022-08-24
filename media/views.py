@@ -3,6 +3,7 @@ import json
 import requests
 from rest_framework.permissions import IsAuthenticated
 
+from account.models import Account
 from media.models import Video
 from media.serializers import VideoSerializer
 
@@ -15,11 +16,14 @@ class VideoView(View):
 
     def get(self, request):
         id = request.GET.get('id')
-        account_id = request.GET.get('account_id')
+        email = request.GET.get('email')
+
+        query = Account.objects.filter(email=email).only("id")
+        account_id = int(query.get().id)
 
         if id:              # 특정 비디오 하나만 가져오는 경우, id는 Video 테이블의 id
             queryset = Video.objects.filter(id=id)
-        elif account_id:    # 특정 유저의 모든 비디오를 가져오는 경우
+        elif email:    # 특정 유저의 모든 비디오를 가져오는 경우
             queryset = Video.objects.filter(account_id=account_id).order_by('-date')
         else:               # video 테이블의 모든 비디오를 가져오는 경우
             queryset = Video.objects.all()
