@@ -1,5 +1,9 @@
 # AIZO Backend Part Repo
 ---
+### 2022.08.25
+- requirements.txt 수정 (안쓰는 라이브러리 정리)
+- ---
+
 ### 2022.08.24
 - account api 에러처리 수정
 - uploader, video api request 파라미터 수정
