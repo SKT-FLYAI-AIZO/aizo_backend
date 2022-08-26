@@ -18,15 +18,19 @@ class VideoView(View):
         id = request.GET.get('id')
         email = request.GET.get('email')
 
-        query = Account.objects.filter(email=email).only("id")
-        account_id = int(query.get().id)
-
         if id:              # 특정 비디오 하나만 가져오는 경우, id는 Video 테이블의 id
             queryset = Video.objects.filter(id=id)
         elif email:    # 특정 유저의 모든 비디오를 가져오는 경우
+            query = Account.objects.filter(email=email).only("id")
+            if query.__len__() == 0:
+                return JsonResponse({"message": "There is no such email."}, status=204)
+            account_id = int(query.get().id)
             queryset = Video.objects.filter(account_id=account_id).order_by('-date')
         else:               # video 테이블의 모든 비디오를 가져오는 경우
             queryset = Video.objects.all()
+
+        if queryset.__len__() == 0:
+            return JsonResponse({"message": "There is no video."}, status=204)
 
         serializer = VideoSerializer(queryset, many=True)
         data = serializer.data
