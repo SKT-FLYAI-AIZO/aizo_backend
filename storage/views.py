@@ -3,6 +3,7 @@ from datetime import datetime
 from azure.storage.blob import BlobServiceClient
 from django.http import JsonResponse
 from django.views import View
+from requests import Response
 
 from account.models import Account
 from aizo_backend.settings import STORAGE_CONNECTION_STRING, MEDIA_URL
@@ -36,8 +37,8 @@ class VideoUploaderView(View):
             blob_service_client = BlobServiceClient.from_connection_string(STORAGE_CONNECTION_STRING)
             blob_video_client = blob_service_client.get_blob_client(container=my_storage.azure_container, blob=video_filename)
             blob_video_client.upload_blob(video_file, overwrite=True)
-        except Exception:
-            return JsonResponse({"message": "Upload failed"}, status=400)
+        except Exception as e:
+            return Response(data={"message": "Upload failed", "error": e}, status=400)
 
         query = Account.objects.filter(email=email).only("id")
         if query.__len__() == 0:
