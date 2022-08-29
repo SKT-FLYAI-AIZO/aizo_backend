@@ -47,8 +47,26 @@ class AccountView(View):
         if email is None:
             return JsonResponse({"message": "There is no email..."}, status=400)
 
+        name = req_data.get('name')
+        password = req_data.get('password')
+
+        if name is None and password is None:
+            return JsonResponse({"message": "There is no name and password..."}, status=400)
+
+        query = Account.objects.filter(email=email)
+
+        if name is None:
+            name = query.get().name
+
+        if password is None:
+            password = query.get().password
+
+        password = bcrypt.hashpw(password.encode("UTF-8"), bcrypt.gensalt()).decode("UTF-8")
+
+        update_data = {"email": email, "name": name, "password": password}
+
         data = Account.objects.get(email=email)
-        serializer = AccountSerializer(instance=data, data=req_data)
+        serializer = AccountSerializer(instance=data, data=update_data)
         try:
             if serializer.is_valid():
                 serializer.save()
