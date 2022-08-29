@@ -65,7 +65,8 @@ class VideoUploaderView(View):
 
         geo_response = requests.get(GEO_API_URL, headers=geo_header, params=geo_param)
         if geo_response.status_code == 200:
-            full_address = geo_response.json().get("full_address")
+            address_info = geo_response.json().get("addressInfo")
+            full_address = address_info.get("fullAddress")
         elif geo_response.status_code == 204:
             full_address = "Unknown location"
         else:
