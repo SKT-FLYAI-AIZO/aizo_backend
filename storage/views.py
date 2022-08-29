@@ -88,4 +88,4 @@ class VideoUploaderView(View):
             path=MEDIA_URL + video_filename
         ).save()
 
-        return JsonResponse({"message": "Success!"}, status=200)
+        return JsonResponse({"message": "Success!"}, status=201)
