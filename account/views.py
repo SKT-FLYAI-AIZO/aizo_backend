@@ -10,6 +10,16 @@ from .serializers import AccountSerializer
 
 
 class AccountView(View):
+    def get(self, request):
+        email = request.GET.get('email')
+        if email is None:
+            return JsonResponse({"message": "There is no email..."}, status=400)
+
+        record = Account.objects.get(email=email)
+        name = record.name
+
+        return JsonResponse({"message": "Get name success!", "name": name}, status=200)
+
     def post(self, request):
         try:
             serializer = AccountSerializer(data=json.loads(request.body))
