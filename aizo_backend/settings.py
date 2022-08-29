@@ -172,3 +172,5 @@ REST_FRAMEWORK = {
 }
 
 REST_USE_JWT = True
+
+TMAP_APP_KEY = os.getenv('TMAP_APP_KEY')

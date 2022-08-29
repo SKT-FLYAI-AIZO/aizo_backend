@@ -1,12 +1,12 @@
 from datetime import datetime
 
+import requests
 from azure.storage.blob import BlobServiceClient
 from django.http import JsonResponse
 from django.views import View
-from requests import Response
 
 from account.models import Account
-from aizo_backend.settings import STORAGE_CONNECTION_STRING, MEDIA_URL
+from aizo_backend.settings import STORAGE_CONNECTION_STRING, MEDIA_URL, TMAP_APP_KEY
 from media.models import Video
 from storage.custom_azure import MyAzureStorage
 
@@ -37,6 +37,7 @@ class VideoUploaderView(View):
             blob_service_client = BlobServiceClient.from_connection_string(STORAGE_CONNECTION_STRING)
             blob_video_client = blob_service_client.get_blob_client(container=my_storage.azure_container, blob=video_filename)
             blob_video_client.upload_blob(video_file, overwrite=True)
+
         except Exception as e:
             return JsonResponse({"message": "Upload failed", "message": str(e)}, status=400)
 
@@ -44,6 +45,40 @@ class VideoUploaderView(View):
         if query.__len__() == 0:
             return JsonResponse({"message": "There is no such email."}, status=204)
         account_id = int(query.get().id)
+
+        pred_param = {"user_id": account_id,
+                      "path": video_filename,
+                      "gps_file": loc,
+                      "date": date
+                      }
+
+        pred_response = requests.post("http://test-aizo.azurewebsites.net/play/yummy", data=pred_param)
+
+        pred_path = pred_response.json().get('path')
+        lat = pred_response.json().get('lat')
+        lon = pred_response.json().get('lon')
+        APP_KEY = TMAP_APP_KEY
+
+        GEO_API_URL = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding"
+        geo_param = {"version": 1, "lat": lat, "lon": lon}
+        geo_header = {"appKey": APP_KEY}
+
+        geo_response = requests.get(GEO_API_URL, headers=geo_header, params=geo_param)
+        if geo_response.status_code == 200:
+            full_address = geo_response.json().get("full_address")
+        elif geo_response.status_code == 204:
+            full_address = "Unknown location"
+        else:
+            return JsonResponse({"message": "Geo api error"}, status=400)
+
+        for path in pred_path:
+            Video.objects.create(
+                date=datetime.strptime(' '.join(date.split('-')), '%Y %m %d'),
+                location=full_address,
+                account_id_id=account_id,
+                path=path,
+                is_cropped=True
+            ).save()
 
         Video.objects.create(
             date=datetime.strptime(' '.join(date.split('-')), '%Y %m %d'),

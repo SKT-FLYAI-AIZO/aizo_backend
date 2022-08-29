@@ -29,3 +29,15 @@ class AccountView(View):
 
         except KeyError:
             return JsonResponse({"message": "INVALID_KEYS"}, status=400)
+
+    def delete(self, request):
+        email = request.GET.get('email')
+        if email is None:
+            return JsonResponse({"message": "There is no email..."}, status=400)
+
+        record = Account.objects.get(email=email)
+        record.delete()
+
+        return JsonResponse({"message": "Account email '{}' deleted!".format(email)}, status=200)
+
+
