@@ -40,4 +40,19 @@ class AccountView(View):
 
         return JsonResponse({"message": "Account email '{}' deleted!".format(email)}, status=200)
 
+    def put(self, request):
+        req_data = json.loads(request.body)
 
+        email = req_data.get('email')
+        if email is None:
+            return JsonResponse({"message": "There is no email..."}, status=400)
+
+        data = Account.objects.get(email=email)
+        serializer = AccountSerializer(instance=data, data=req_data)
+        try:
+            if serializer.is_valid():
+                serializer.save()
+
+                return JsonResponse({"message": "Account email '{}' updated!".format(email)}, status=200)
+        except Exception as e:
+            return JsonResponse({"message": "Update failed", "message": str(e)}, status=400)

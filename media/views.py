@@ -19,15 +19,15 @@ class VideoView(View):
         email = request.GET.get('email')
 
         if id:              # 특정 비디오 하나만 가져오는 경우, id는 Video 테이블의 id
-            queryset = Video.objects.filter(id=id)
-        elif email:    # 특정 유저의 모든 비디오를 가져오는 경우
+            queryset = Video.objects.filter(id=id, is_cropped=True)
+        elif email:         # 특정 유저의 모든 비디오를 가져오는 경우
             query = Account.objects.filter(email=email).only("id")
             if query.__len__() == 0:
                 return JsonResponse({"message": "There is no such email."}, status=204)
             account_id = int(query.get().id)
-            queryset = Video.objects.filter(account_id=account_id).order_by('-date')
+            queryset = Video.objects.filter(account_id=account_id, is_cropped=True).order_by('-date')
         else:               # video 테이블의 모든 비디오를 가져오는 경우
-            queryset = Video.objects.all()
+            queryset = Video.objects.all(is_cropped=True)
 
         if queryset.__len__() == 0:
             return JsonResponse({"message": "There is no video."}, status=204)
@@ -58,8 +58,11 @@ class FileView(View):
 
     def get(self, request):
         file_url = request.GET.get('path')
+        idx = file_url.rfind('/')
+        file_name = file_url[idx:]
+
         r = requests.get(file_url, stream=True)
         response = StreamingHttpResponse(streaming_content=r)
-        response['Content-Disposition'] = 'attachment; filename="video.mp4"'
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
 
         return response
