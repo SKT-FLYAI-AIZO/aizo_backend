@@ -3,6 +3,7 @@
 ### 2022.08.29
 - Uploader api 수정
 - Account delete api 생성
+- Account update api 생성
 ---
 
 ### 2022.08.26
