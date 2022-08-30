@@ -63,6 +63,6 @@ class FileView(View):
 
         r = requests.get(file_url, stream=True)
         response = HttpResponse(r.content, content_type="video/mp4")
-        response['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
+        response['Content-Disposition'] = 'inline; filename="{}"'.format(file_name)
 
         return response
