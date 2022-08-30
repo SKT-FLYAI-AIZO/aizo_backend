@@ -31,7 +31,7 @@ class VideoUploaderView(View):
         if date is None:
             return JsonResponse({"message": "There is no date..."}, status=400)
 
-        video_filename = str(email) + "_" + date + ".mp4"
+        video_filename = str(email) + "_" + date.replace(" ", "_") + ".mp4"
 
         try:
             blob_service_client = BlobServiceClient.from_connection_string(STORAGE_CONNECTION_STRING)
@@ -89,7 +89,7 @@ class VideoUploaderView(View):
             ).save()
 
         Video.objects.create(
-            date=datetime.strptime(' '.join(date.split('-')), '%Y %m %d'),
+            date=date,
             location="test location",
             account_id_id=account_id,
             path=MEDIA_URL + video_filename

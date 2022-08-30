@@ -62,7 +62,7 @@ class FileView(View):
         file_name = file_url[idx:]
 
         r = requests.get(file_url, stream=True)
-        response = HttpResponse(r.content, content_type="video/mp4")
+        response = HttpResponse(r.content, content_type='application/force-download')
         response['Content-Disposition'] = 'inline; filename="{}"'.format(file_name)
 
         return response
