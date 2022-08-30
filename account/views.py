@@ -104,7 +104,6 @@ class AlarmView(View):
 
         return JsonResponse({"message": "Success!", "data": data}, status=200)
 
-
     def post(self, request):
         data = json.loads(request.body)
 

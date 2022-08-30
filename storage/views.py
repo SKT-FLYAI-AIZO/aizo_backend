@@ -52,32 +52,39 @@ class VideoUploaderView(View):
                       "date": date
                       }
 
-        pred_response = requests.post("http://test-aizo.azurewebsites.net/play/yummy", data=pred_param)
-
-        pred_path = pred_response.json().get('path')
-        lat = pred_response.json().get('lat')
-        lon = pred_response.json().get('lon')
         APP_KEY = TMAP_APP_KEY
-
         GEO_API_URL = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding"
-        geo_param = {"version": 1, "lat": lat, "lon": lon}
-        geo_header = {"appKey": APP_KEY}
 
-        geo_response = requests.get(GEO_API_URL, headers=geo_header, params=geo_param)
-        if geo_response.status_code == 200:
-            address_info = geo_response.json().get("addressInfo")
-            full_address = address_info.get("fullAddress")
-        elif geo_response.status_code == 204:
-            full_address = "Unknown location"
-        else:
-            return JsonResponse({"message": "Geo api error"}, status=400)
+        pred_response = requests.post("http://test-aizo.azurewebsites.net/play", data=pred_param)
 
-        for path in pred_path:
+        pred_path_list = pred_response.json().get('path')
+        gps = pred_response.json().get('gps')
+
+        for i in range(len(pred_path_list)):
+            lat = gps[i].get('lat')
+            lon = gps[i].get('lon')
+
+            if lat is None or lon is None:
+                return JsonResponse({"message": "There is no lat or lon"}, status=400)
+
+            geo_param = {"version": 1, "lat": lat, "lon": lon}
+            geo_header = {"appKey": APP_KEY}
+
+            geo_response = requests.get(GEO_API_URL, headers=geo_header, params=geo_param)
+
+            if geo_response.status_code == 200:
+                address_info = geo_response.json().get("addressInfo")
+                full_address = address_info.get("fullAddress")
+            elif geo_response.status_code == 204:
+                full_address = "Unknown location"
+            else:
+                return JsonResponse({"message": "Geo api error"}, status=400)
+
             Video.objects.create(
                 date=datetime.strptime(' '.join(date.split('-')), '%Y %m %d'),
                 location=full_address,
                 account_id_id=account_id,
-                path=path,
+                path=pred_path_list[i],
                 is_cropped=True
             ).save()
 
