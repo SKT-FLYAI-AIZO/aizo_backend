@@ -92,14 +92,13 @@ class AlarmView(View):
         email = request.GET.get('email')
         if email is None:
             return JsonResponse({"message": "Fill the email."}, status=400)
-        is_read = request.GET.get('is_read', False)
 
         query = Account.objects.filter(email=email).only("id")
         if query.__len__() == 0:
             return JsonResponse({"message": "There is no such email."}, status=204)
         account_id = int(query.get().id)
 
-        data = Alarm.objects.filter(account_id_id=account_id, is_read=is_read)
+        data = Alarm.objects.filter(account_id_id=account_id)
         data = serializers.serialize("json", data, fields=('account_id', 'content', 'is_read'))
 
         return JsonResponse({"message": "Success!", "data": data}, status=200)
