@@ -138,30 +138,16 @@ class AlarmView(View):
         return JsonResponse({"message": "User '{}' alarms are deleted!".format(email)}, status=200)
 
     def put(self, request):
-        req_data = json.loads(request.body)
-
-        alarm_id = req_data.get('alarm_id')
-        content = req_data.get('content')
-        is_read = req_data.get('is_read')
-
-        if content is None and is_read is None:
-            return JsonResponse({"message": "There is no content and is_read..."}, status=400)
-
-        query = Alarm.objects.filter(id=alarm_id)
-
-        if content is None:
-            content = query.get().content
-
-        if is_read is None:
-            is_read = query.get().is_read
-
-        update_data = {"content": content, "is_read": is_read}
-
-        data = Alarm.objects.get(id=alarm_id)
-        serializer = AlarmSerializer(instance=data, data=update_data)
         try:
-            if serializer.is_valid():
-                serializer.save()
-                return JsonResponse({"message": "Alarm id '{}' updated!".format(alarm_id)}, status=200)
+            req_data = json.loads(request.body)
+
+            alarm_id_list = req_data.get('alarm_id_list')
+
+            records = Alarm.objects.filter(id__in=alarm_id_list)
+            for record in records:
+                record.is_read = True
+                record.save()
+
+            return JsonResponse({"message": "Alarm id '{}' updated!".format(alarm_id_list)}, status=200)
         except Exception as e:
             return JsonResponse({"message": "Update failed", "message": str(e)}, status=400)
