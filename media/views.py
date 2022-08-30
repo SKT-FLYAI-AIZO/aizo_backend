@@ -8,7 +8,7 @@ from media.models import Video
 from media.serializers import VideoSerializer
 
 from django.views import View
-from django.http import StreamingHttpResponse, JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 
 class VideoView(View):
@@ -62,7 +62,7 @@ class FileView(View):
         file_name = file_url[idx:]
 
         r = requests.get(file_url, stream=True)
-        response = StreamingHttpResponse(streaming_content=r)
-        response['Content-Disposition'] = 'inline; filename="{}"'.format(file_name)
+        response = HttpResponse(r.content, content_type="video/mp4")
+        response['Content-Disposition'] = 'attachment; filename="{}"'.format(file_name)
 
         return response
