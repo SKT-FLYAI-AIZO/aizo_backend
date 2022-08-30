@@ -70,7 +70,8 @@ class VideoUploaderView(View):
 
         APP_KEY = TMAP_APP_KEY
         GEO_API_URL = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding"
-        HEADER = {"USER-AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"}
+        HEADER = {"USER-AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
+                  "Content-Type": "application/json"}
         pred_response = requests.post("http://20.214.150.23:9090/play", headers=HEADER, data=pred_param, timeout=3600)
 
         if pred_response.status_code != 200:
