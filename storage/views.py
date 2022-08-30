@@ -65,7 +65,7 @@ class VideoUploaderView(View):
 
         pred_param = {"path": video_filename, "gps": loc_dict, "time": date}
 
-        pred_param = json.dumps(pred_param)
+        pred_param = json.dumps(pred_param, ensure_ascii=False, separators=(',', ':'))
 
         APP_KEY = TMAP_APP_KEY
         GEO_API_URL = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding"
