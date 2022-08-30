@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 import requests
@@ -46,9 +47,20 @@ class VideoUploaderView(View):
             return JsonResponse({"message": "There is no such email."}, status=204)
         account_id = int(query.get().id)
 
+        try:
+            loc = json.loads(loc)
+            loc_dict = {"data": []}
+            for item in loc['data']:
+                temp = {}
+                temp[item['time']] = [item['lat'], item['lon']]
+                loc_dict["data"].append(temp)
+
+        except Exception as e:
+            return JsonResponse({"message": "make loc failed", "message": str(e)}, status=400)
+
         pred_param = {"user_id": account_id,
                       "path": video_filename,
-                      "gps_file": loc,
+                      "gps_file": loc_dict,
                       "date": date
                       }
 
@@ -59,6 +71,7 @@ class VideoUploaderView(View):
 
         pred_path_list = pred_response.json().get('path')
         gps = pred_response.json().get('gps')
+        date_list = pred_response.json().get('date')
 
         for i in range(len(pred_path_list)):
             lat = gps[i].get('lat')
@@ -81,7 +94,7 @@ class VideoUploaderView(View):
                 return JsonResponse({"message": "Geo api error"}, status=400)
 
             Video.objects.create(
-                date=datetime.strptime(' '.join(date.split('-')), '%Y %m %d'),
+                date=date_list[i],
                 location=full_address,
                 account_id_id=account_id,
                 path=pred_path_list[i],
@@ -90,7 +103,7 @@ class VideoUploaderView(View):
 
         Video.objects.create(
             date=date,
-            location="test location",
+            location="원본 영상은 위치정보 X",
             account_id_id=account_id,
             path=MEDIA_URL + video_filename
         ).save()
