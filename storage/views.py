@@ -49,11 +49,9 @@ class VideoUploaderView(View):
 
         try:
             loc = json.loads(loc)
-            loc_dict = {"data": []}
+            loc_dict = {"data": {}}
             for item in loc['data']:
-                temp = {}
-                temp[item['time']] = [item['lat'], item['lon']]
-                loc_dict["data"].append(temp)
+                loc_dict["data"][item['time']] = [item['lat'], item['lon']]
 
         except Exception as e:
             return JsonResponse({"message": "make loc failed", "message": str(e)}, status=400)
