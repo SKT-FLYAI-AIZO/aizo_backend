@@ -63,10 +63,7 @@ class VideoUploaderView(View):
         except Exception as e:
             return JsonResponse({"message": "make loc failed" + str(e)}, status=400)
 
-        pred_param = {"path": video_filename,
-                      "gps": loc_dict,
-                      "time": date
-                      }
+        pred_param = {"path": video_filename, "gps": loc_dict, "time": date}
 
         pred_param = json.dumps(pred_param)
 
