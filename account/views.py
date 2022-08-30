@@ -151,3 +151,22 @@ class AlarmView(View):
             return JsonResponse({"message": "Alarm id '{}' updated!".format(alarm_id_list)}, status=200)
         except Exception as e:
             return JsonResponse({"message": "Update failed", "message": str(e)}, status=400)
+
+
+class IsAlarmView(View):
+    def get(self, request):
+        email = request.GET.get('email')
+        if email is None:
+            return JsonResponse({"message": "Fill the email."}, status=400)
+
+        query = Account.objects.filter(email=email).only("id")
+        if query.__len__() == 0:
+            return JsonResponse({"message": "There is no such email."}, status=204)
+        account_id = int(query.get().id)
+
+        records = Alarm.objects.filter(account_id_id=account_id, is_read=False)
+
+        if records:
+            return JsonResponse({"message": "There is unread alarm", "is_alarm": True}, status=200)
+        else:
+            return JsonResponse({"message": "There is no unread alarm", "is_alarm": False}, status=200)
