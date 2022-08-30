@@ -123,14 +123,19 @@ class AlarmView(View):
         return JsonResponse({"message": "Success!"}, status=201)
 
     def delete(self, request):
-        alarm_id = request.GET.get('alarm_id')
-        if alarm_id is None:
-            return JsonResponse({"message": "There is no id..."}, status=400)
+        email = request.GET.get('email')
+        if email is None:
+            return JsonResponse({"message": "Fill the email."}, status=400)
 
-        record = Alarm.objects.get(id=alarm_id)
-        record.delete()
+        query = Account.objects.filter(email=email).only("id")
+        if query.__len__() == 0:
+            return JsonResponse({"message": "There is no such email."}, status=204)
+        account_id = int(query.get().id)
 
-        return JsonResponse({"message": "Alarm id '{}' deleted!".format(alarm_id)}, status=200)
+        records = Alarm.objects.filter(account_id_id=account_id)
+        records.delete()
+
+        return JsonResponse({"message": "User '{}' alarms are deleted!".format(email)}, status=200)
 
     def put(self, request):
         req_data = json.loads(request.body)
