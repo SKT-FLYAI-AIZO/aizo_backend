@@ -32,7 +32,11 @@ class VideoUploaderView(View):
         if date is None:
             return JsonResponse({"message": "There is no date..."}, status=400)
 
-        video_filename = str(email) + "_" + date.replace(" ", "_") + ".mp4"
+        idx = date.rfind(".")
+        remake_date = date[:idx]
+        remake_date = remake_date.replace("T", "_")
+
+        video_filename = str(email) + "_" + remake_date + ".mp4"
 
         try:
             blob_service_client = BlobServiceClient.from_connection_string(STORAGE_CONNECTION_STRING)
@@ -48,24 +52,29 @@ class VideoUploaderView(View):
         account_id = int(query.get().id)
 
         try:
+            if type(loc) != str:
+                raise TypeError
             loc = json.loads(loc)
             loc_dict = {"data": {}}
             for item in loc['data']:
                 loc_dict["data"][item['time']] = [item['lat'], item['lon']]
-
+        except TypeError:
+            return JsonResponse({"message": "loc type error"}, status=400)
         except Exception as e:
-            return JsonResponse({"message": "make loc failed", "message": str(e)}, status=400)
+            return JsonResponse({"message": "make loc failed" + str(e)}, status=400)
 
-        pred_param = {"user_id": account_id,
-                      "path": video_filename,
-                      "gps_file": loc_dict,
-                      "date": date
+        pred_param = {"path": video_filename,
+                      "gps": loc_dict,
+                      "time": date
                       }
 
         APP_KEY = TMAP_APP_KEY
         GEO_API_URL = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding"
+        HEADER = {"USER-AGENT": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"}
+        pred_response = requests.post("http://20.214.150.23:9090/play", headers=HEADER, data=pred_param, timeout=3600)
 
-        pred_response = requests.post("http://test-aizo.azurewebsites.net/play", data=pred_param)
+        if pred_response.status_code != 200:
+            return JsonResponse({"message": "pred api error", "res_content": str(pred_response.content)}, status=400)
 
         pred_path_list = pred_response.json().get('path')
         gps = pred_response.json().get('gps')
