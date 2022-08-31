@@ -63,50 +63,6 @@ class VideoUploaderView(View):
         except Exception as e:
             return JsonResponse({"message": "make loc failed" + str(e)}, status=400)
 
-        pred_param = {"path": video_filename, "gps": loc_dict, "time": date}
-
-        pred_param = json.dumps(pred_param, ensure_ascii=False, separators=(',', ':'))
-
-        APP_KEY = TMAP_APP_KEY
-        GEO_API_URL = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding"
-        HEADER = {"Content-Type": "application/json"}
-        pred_response = requests.post("http://20.214.150.23:9090/play", headers=HEADER, json=pred_param, timeout=3600)
-
-        if pred_response.status_code != 201 and pred_response.status_code != 204:
-            return JsonResponse({"message": "pred api error", "res_content": str(pred_response.content)}, status=pred_response.status_code)
-
-        pred_path_list = pred_response.json().get('path')
-        gps = pred_response.json().get('gps')
-        date_list = pred_response.json().get('date')
-
-        for i in range(len(pred_path_list)):
-            lat = gps[i].get('lat')
-            lon = gps[i].get('lon')
-
-            if lat is None or lon is None:
-                return JsonResponse({"message": "There is no lat or lon"}, status=400)
-
-            geo_param = {"version": 1, "lat": lat, "lon": lon}
-            geo_header = {"appKey": APP_KEY}
-
-            geo_response = requests.get(GEO_API_URL, headers=geo_header, params=geo_param)
-
-            if geo_response.status_code == 200:
-                address_info = geo_response.json().get("addressInfo")
-                full_address = address_info.get("fullAddress")
-            elif geo_response.status_code == 204:
-                full_address = "Unknown location"
-            else:
-                return JsonResponse({"message": "Geo api error"}, status=400)
-
-            Video.objects.create(
-                date=date_list[i],
-                location=full_address,
-                account_id_id=account_id,
-                path=pred_path_list[i],
-                is_cropped=True
-            ).save()
-
         original_date = remake_date.replace("_", " ")
 
         Video.objects.create(
@@ -116,7 +72,50 @@ class VideoUploaderView(View):
                 path=MEDIA_URL + video_filename
                 ).save()
 
+        pred_param = {"path": video_filename, "gps": loc_dict, "time": date}
+        pred_param = json.dumps(pred_param, ensure_ascii=False, separators=(',', ':'))
+
+        APP_KEY = TMAP_APP_KEY
+        GEO_API_URL = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding"
+        HEADER = {"Content-Type": "application/json"}
+        pred_response = requests.post("http://20.214.150.23:9090/play", headers=HEADER, json=pred_param, timeout=3600)
+
         if pred_response.status_code == 201:
+            pred_path_list = pred_response.json().get('path')
+            gps = pred_response.json().get('gps')
+            date_list = pred_response.json().get('date')
+
+            for i in range(len(pred_path_list)):
+                lat = gps[i].get('lat')
+                lon = gps[i].get('lon')
+
+                if lat is None or lon is None:
+                    return JsonResponse({"message": "There is no lat or lon"}, status=400)
+
+                geo_param = {"version": 1, "lat": lat, "lon": lon}
+                geo_header = {"appKey": APP_KEY}
+
+                geo_response = requests.get(GEO_API_URL, headers=geo_header, params=geo_param)
+
+                if geo_response.status_code == 200:
+                    address_info = geo_response.json().get("addressInfo")
+                    full_address = address_info.get("fullAddress")
+                elif geo_response.status_code == 204:
+                    full_address = "Unknown location"
+                else:
+                    return JsonResponse({"message": "Geo api error"}, status=400)
+
+                Video.objects.create(
+                    date=date_list[i],
+                    location=full_address,
+                    account_id_id=account_id,
+                    path=pred_path_list[i],
+                    is_cropped=True
+                ).save()
+
             return JsonResponse({"message": "Detected video save success!"}, status=201)
+
+        elif pred_response.status_code == 204:
+            return JsonResponse({"message": "There is no detected video"}, status=200)
         else:
-            JsonResponse({"message": "There is no detected video"}, status=200)
+            return JsonResponse({"message": "pred api error", "res_content": str(pred_response.content)}, status=pred_response.status_code)
