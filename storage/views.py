@@ -107,11 +107,16 @@ class VideoUploaderView(View):
                 is_cropped=True
             ).save()
 
-        Video.objects.create(
-            date=date,
-            location="원본 영상은 위치정보 X",
-            account_id_id=account_id,
-            path=MEDIA_URL + video_filename
-        ).save()
+        original_date = remake_date.replace("_", " ")
 
-        return JsonResponse({"message": "Upload success!"}, status=201)
+        Video.objects.create(
+                date=original_date,
+                location="원본 영상은 위치정보 X",
+                account_id_id=account_id,
+                path=MEDIA_URL + video_filename
+                ).save()
+
+        if len(pred_path_list) != 0:
+            return JsonResponse({"message": "There is no detected video"}, status=200)
+        else:
+            return JsonResponse({"message": "Detected video save success!"}, status=201)
