@@ -1,5 +1,9 @@
 # AIZO Backend Part Repo
 ---
+### 2022.08.31
+- Uploader api 수정
+---
+
 ### 2022.08.30
 - File download api 수정
 - Uploader api 수정

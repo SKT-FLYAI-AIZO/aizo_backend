@@ -72,7 +72,7 @@ class VideoUploaderView(View):
         HEADER = {"Content-Type": "application/json"}
         pred_response = requests.post("http://20.214.150.23:9090/play", headers=HEADER, json=pred_param, timeout=3600)
 
-        if pred_response.status_code != 200:
+        if pred_response.status_code != 201:
             return JsonResponse({"message": "pred api error", "res_content": str(pred_response.content)}, status=pred_response.status_code)
 
         pred_path_list = pred_response.json().get('path')
@@ -114,4 +114,4 @@ class VideoUploaderView(View):
             path=MEDIA_URL + video_filename
         ).save()
 
-        return JsonResponse({"message": "Success!"}, status=201)
+        return JsonResponse({"message": "Upload success!"}, status=201)
