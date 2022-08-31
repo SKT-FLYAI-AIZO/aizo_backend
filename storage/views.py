@@ -65,15 +65,15 @@ class VideoUploaderView(View):
 
         pred_param = {"path": video_filename, "gps": loc_dict, "time": date}
 
-        # pred_param = json.dumps(pred_param, ensure_ascii=False, separators=(',', ':'))
+        pred_param = json.dumps(pred_param, ensure_ascii=False, separators=(',', ':'))
 
         APP_KEY = TMAP_APP_KEY
         GEO_API_URL = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding"
-        # HEADER = {"Content-Type": "application/json"}
-        pred_response = requests.post("http://20.214.150.23:9090/play", data=pred_param, timeout=3600)
+        HEADER = {"Content-Type": "application/json"}
+        pred_response = requests.post("http://20.214.150.23:9090/play", headers=HEADER, json=pred_param, timeout=3600)
 
         if pred_response.status_code != 200:
-            return JsonResponse({"message": "pred api error", "res_content": str(pred_response.content)}, status=400)
+            return JsonResponse({"message": "pred api error", "res_content": str(pred_response.content)}, status=pred_response.status_code)
 
         pred_path_list = pred_response.json().get('path')
         gps = pred_response.json().get('gps')
