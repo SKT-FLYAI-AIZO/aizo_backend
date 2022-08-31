@@ -71,8 +71,9 @@ class VideoUploaderView(View):
         GEO_API_URL = "https://apis.openapi.sk.com/tmap/geo/reversegeocoding"
         HEADER = {"Content-Type": "application/json"}
         pred_response = requests.post("http://20.214.150.23:9090/play", headers=HEADER, json=pred_param, timeout=3600)
+        pred_status = pred_response.status_code
 
-        if pred_response.status_code != 201:
+        if pred_status != 201 and pred_status != 204:
             return JsonResponse({"message": "pred api error", "res_content": str(pred_response.content)}, status=pred_response.status_code)
 
         pred_path_list = pred_response.json().get('path')
@@ -116,7 +117,7 @@ class VideoUploaderView(View):
                 path=MEDIA_URL + video_filename
                 ).save()
 
-        if len(pred_path_list) != 0:
-            return JsonResponse({"message": "There is no detected video"}, status=200)
-        else:
+        if pred_status == 201:
             return JsonResponse({"message": "Detected video save success!"}, status=201)
+        else:
+            JsonResponse({"message": "There is no detected video"}, status=200)
